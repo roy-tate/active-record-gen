@@ -15,6 +15,7 @@ namespace ActiveRecordGenerator.CodeGen
 		private int _Numeric_Precision;
 		private int _Numeric_Scale;
 		private string _Data_Type;
+		private bool _Is_Primary_Key;
 
 		private DbForeignKeyInfo _DbForeignKeyInfo;
 
@@ -83,21 +84,24 @@ namespace ActiveRecordGenerator.CodeGen
 			set { _DbForeignKeyInfo = value; }
 		}
 
+		public bool Is_Primary_Key
+		{
+			get { return _Is_Primary_Key; }
+			set { _Is_Primary_Key = value; }
+		}
+
 		#endregion
 
 		#region Business_Method
 
 		public bool IsPrimaryKey()
 		{
-			if (Is_Nullable) return false;
-			if (Column_Name.Equals("ID")) return true;
-			return false;
+			return _Is_Primary_Key;
 		}
 
 		public bool IsForeignKey()
 		{
-			if (Column_Name.EndsWith("_ID")) return true;
-			return false;
+			return (_DbForeignKeyInfo != null);
 		}
 
 		public string GetPropertyName()

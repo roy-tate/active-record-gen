@@ -206,10 +206,73 @@ SingularToPlural = {
 			}
 
 			_DbFieldInfo = list.ToArray();
+			// identify primary key
+			CollectPrimaryKeys(p_Conn);
 			// load foreign keys and associate them to dbFieldInfo objects
 			CollectForeignKeys(p_Conn);
 		}
-		
+
+		/// <summary>
+		/// CollectPrimaryKeys - find the primary key column name and set the associated field's flag
+		/// </summary>
+		/// <param name="p_Conn">an open database connection to the appropriate server and db</param>
+		private void CollectPrimaryKeys(IDbConnection p_Conn)
+		{
+			string sqlQuery = @"SELECT tc.CONSTRAINT_NAME, tc.TABLE_NAME, ccu.COLUMN_NAME"
+		+ " FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc"
+		+ " JOIN INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE ccu ON"
+		+ "	ccu.CONSTRAINT_CATALOG = tc.CONSTRAINT_CATALOG"
+		+ "	AND ccu.TABLE_NAME = tc.TABLE_NAME"
+		+ "	AND ccu.CONSTRAINT_NAME = tc.CONSTRAINT_NAME"
+		+ " WHERE tc.CONSTRAINT_TYPE = 'PRIMARY KEY'"
+		+ " AND tc.TABLE_NAME = @Table";
+
+			//TODO: Implement CollectPrimaryKeys()
+			int i;
+
+			// Connect to database, collect list of tables 
+			IDbCommand cmd = null;
+			IDataReader reader = null;
+
+			string Constraint_Name;
+			string PK_Table;
+			string PK_Column;
+
+			try
+			{
+				cmd = p_Conn.CreateCommand();
+				cmd.CommandType = CommandType.Text;
+				cmd.CommandText = sqlQuery;
+				IDbDataParameter p = cmd.CreateParameter();
+				p.ParameterName = "Table";
+				p.Value = _TableName;
+				cmd.Parameters.Add(p);
+				reader = cmd.ExecuteReader();
+				while (reader.Read())
+				{
+					i = 0;
+					Constraint_Name = reader.IsDBNull(i) ? "" : reader.GetString(i); i++;
+					PK_Table = reader.IsDBNull(i) ? "" : reader.GetString(i); i++;
+					PK_Column = reader.IsDBNull(i) ? "" : reader.GetString(i); i++;
+
+					foreach (DbFieldInfo field in _DbFieldInfo)
+					{
+						if (field.Column_Name.Equals(PK_Column))
+						{
+							field.Is_Primary_Key = true;
+						}
+					}
+				}
+			}
+			finally
+			{
+				if (reader != null) reader.Close();
+				if (cmd != null) cmd.Dispose();
+				reader = null;
+				cmd = null;
+			}
+		}		
+
 		private void CollectForeignKeys(IDbConnection p_Conn)
 		{
 			string sqlQuery = @"SELECT FK.TABLE_NAME AS K_Table,"
