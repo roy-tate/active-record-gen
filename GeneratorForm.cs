@@ -183,9 +183,20 @@ namespace ActiveRecordGenerator
 
 		}
 
+		private void btnBrowse_Click(object sender, EventArgs e)
+		{
+			System.Windows.Forms.FolderBrowserDialog dlg = new FolderBrowserDialog();
+
+			if (dlg.ShowDialog() == DialogResult.OK)
+			{
+				this.OutputDir = dlg.SelectedPath;
+			}
+		}
+
 		private void btnClose_Click(object sender, EventArgs e)
 		{
 			this.Close();
 		}
+
 	}
 }
