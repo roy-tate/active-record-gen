@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace ActiveRecordGenerator.CodeGen
@@ -107,20 +108,49 @@ namespace ActiveRecordGenerator.CodeGen
 		public string GetPropertyName()
 		{
 			if (this.IsForeignKey())
-				return Column_Name.Substring(0, Column_Name.Length - 3);
+			{
+				if (Column_Name.EndsWith("_ID"))
+				{
+					return Column_Name.Substring(0, Column_Name.Length - 3);
+				}
+				else if (Column_Name.EndsWith("ID"))
+				{
+					return Column_Name.Substring(0, Column_Name.Length - 2);
+				}
+				else
+					return Column_Name;
+			}
 			else
 				return Column_Name;
 		}
 
 		public string GetPrivateVariableName()
 		{
+			string privateVariableName;
+
 			if (IsPrimaryKey())
-				return "_" + Column_Name.ToLowerInvariant();
+				privateVariableName = "_" + Column_Name.ToLowerInvariant();
 			else if (this.IsForeignKey())
+			{
 				// subtracting 4 characters accounts for starting at index 1, and excluding suffix of "_ID"
-				return "_" + Column_Name.Substring(0, 1).ToLowerInvariant() + Column_Name.Substring(1, Column_Name.Length - 4);
+				privateVariableName = "_" + Column_Name.Substring(0, 1).ToLowerInvariant() + Column_Name.Substring(1);
+				if (privateVariableName.EndsWith("_ID"))
+				{
+					privateVariableName = privateVariableName.Substring(0, privateVariableName.Length - 3);
+					Debug.WriteLine("Column: "+ _Column_Name +" maps to"+ privateVariableName);
+				}
+				else if (privateVariableName.EndsWith("ID"))
+				{
+					privateVariableName = privateVariableName.Substring(0, privateVariableName.Length - 2);
+					Debug.WriteLine("Column: " + _Column_Name + " maps to" + privateVariableName);
+				}
+			}
 			else
-				return "_" + Column_Name.Substring(0, 1).ToLowerInvariant() + Column_Name.Substring(1);
+			{
+				privateVariableName = "_" + Column_Name.Substring(0, 1).ToLowerInvariant() + Column_Name.Substring(1);
+			}
+
+			return privateVariableName;
 		}
 
 		public string GetSqlType()
@@ -162,7 +192,7 @@ namespace ActiveRecordGenerator.CodeGen
 
 		public string GetNetType()
 		{
-			if (this.IsForeignKey()) return Column_Name.Substring(0, Column_Name.Length - 3);
+			if (this.IsForeignKey()) return DbTableInfo.GetSingularName(_DbForeignKeyInfo.PK_Table);
 
 			string sqlType = Data_Type;
 			// the suffix will add "?" at end if .net type is not a class and field is nullable

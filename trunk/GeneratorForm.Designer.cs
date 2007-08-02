@@ -54,14 +54,15 @@ namespace ActiveRecordGenerator
 			this.btnTemplatesSelectNone = new System.Windows.Forms.Button();
 			this.btnTemplatesSelectAll = new System.Windows.Forms.Button();
 			this.label7 = new System.Windows.Forms.Label();
+			this.btnBrowse = new System.Windows.Forms.Button();
 			this.statusStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// btnConnect
 			// 
-			this.btnConnect.Location = new System.Drawing.Point(317, 12);
+			this.btnConnect.Location = new System.Drawing.Point(385, 12);
 			this.btnConnect.Name = "btnConnect";
-			this.btnConnect.Size = new System.Drawing.Size(73, 48);
+			this.btnConnect.Size = new System.Drawing.Size(73, 46);
 			this.btnConnect.TabIndex = 0;
 			this.btnConnect.Text = "Connect and Scan";
 			this.btnConnect.UseVisualStyleBackColor = true;
@@ -71,14 +72,14 @@ namespace ActiveRecordGenerator
 			// 
 			this.txtServer.Location = new System.Drawing.Point(101, 12);
 			this.txtServer.Name = "txtServer";
-			this.txtServer.Size = new System.Drawing.Size(210, 20);
+			this.txtServer.Size = new System.Drawing.Size(278, 20);
 			this.txtServer.TabIndex = 1;
 			// 
 			// txtDatabase
 			// 
 			this.txtDatabase.Location = new System.Drawing.Point(101, 38);
 			this.txtDatabase.Name = "txtDatabase";
-			this.txtDatabase.Size = new System.Drawing.Size(210, 20);
+			this.txtDatabase.Size = new System.Drawing.Size(278, 20);
 			this.txtDatabase.TabIndex = 2;
 			// 
 			// label1
@@ -103,7 +104,7 @@ namespace ActiveRecordGenerator
 			// 
 			this.chkLbTables.CheckOnClick = true;
 			this.chkLbTables.FormattingEnabled = true;
-			this.chkLbTables.Location = new System.Drawing.Point(415, 28);
+			this.chkLbTables.Location = new System.Drawing.Point(467, 28);
 			this.chkLbTables.Name = "chkLbTables";
 			this.chkLbTables.Size = new System.Drawing.Size(214, 289);
 			this.chkLbTables.Sorted = true;
@@ -111,7 +112,7 @@ namespace ActiveRecordGenerator
 			// 
 			// btnTablesSelectAll
 			// 
-			this.btnTablesSelectAll.Location = new System.Drawing.Point(635, 28);
+			this.btnTablesSelectAll.Location = new System.Drawing.Point(687, 28);
 			this.btnTablesSelectAll.Name = "btnTablesSelectAll";
 			this.btnTablesSelectAll.Size = new System.Drawing.Size(75, 23);
 			this.btnTablesSelectAll.TabIndex = 6;
@@ -121,7 +122,7 @@ namespace ActiveRecordGenerator
 			// 
 			// btnTablesSelectNone
 			// 
-			this.btnTablesSelectNone.Location = new System.Drawing.Point(635, 57);
+			this.btnTablesSelectNone.Location = new System.Drawing.Point(687, 57);
 			this.btnTablesSelectNone.Name = "btnTablesSelectNone";
 			this.btnTablesSelectNone.Size = new System.Drawing.Size(75, 23);
 			this.btnTablesSelectNone.TabIndex = 7;
@@ -131,7 +132,7 @@ namespace ActiveRecordGenerator
 			// 
 			// btnGenerate
 			// 
-			this.btnGenerate.Location = new System.Drawing.Point(635, 86);
+			this.btnGenerate.Location = new System.Drawing.Point(687, 86);
 			this.btnGenerate.Name = "btnGenerate";
 			this.btnGenerate.Size = new System.Drawing.Size(75, 23);
 			this.btnGenerate.TabIndex = 8;
@@ -142,7 +143,7 @@ namespace ActiveRecordGenerator
 			// label3
 			// 
 			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point(412, 12);
+			this.label3.Location = new System.Drawing.Point(464, 12);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(91, 13);
 			this.label3.TabIndex = 9;
@@ -161,7 +162,7 @@ namespace ActiveRecordGenerator
 			// 
 			this.txtOutputDir.Location = new System.Drawing.Point(101, 64);
 			this.txtOutputDir.Name = "txtOutputDir";
-			this.txtOutputDir.Size = new System.Drawing.Size(289, 20);
+			this.txtOutputDir.Size = new System.Drawing.Size(278, 20);
 			this.txtOutputDir.TabIndex = 11;
 			// 
 			// chkPartial
@@ -228,16 +229,16 @@ namespace ActiveRecordGenerator
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsStatus,
             this.tsProgressBar});
-			this.statusStrip1.Location = new System.Drawing.Point(0, 335);
+			this.statusStrip1.Location = new System.Drawing.Point(0, 345);
 			this.statusStrip1.Name = "statusStrip1";
-			this.statusStrip1.Size = new System.Drawing.Size(735, 22);
+			this.statusStrip1.Size = new System.Drawing.Size(774, 22);
 			this.statusStrip1.TabIndex = 18;
 			this.statusStrip1.Text = "statusStrip1";
 			// 
 			// tsStatus
 			// 
 			this.tsStatus.Name = "tsStatus";
-			this.tsStatus.Size = new System.Drawing.Size(618, 17);
+			this.tsStatus.Size = new System.Drawing.Size(657, 17);
 			this.tsStatus.Spring = true;
 			// 
 			// tsProgressBar
@@ -247,7 +248,7 @@ namespace ActiveRecordGenerator
 			// 
 			// btnClose
 			// 
-			this.btnClose.Location = new System.Drawing.Point(635, 115);
+			this.btnClose.Location = new System.Drawing.Point(687, 115);
 			this.btnClose.Name = "btnClose";
 			this.btnClose.Size = new System.Drawing.Size(75, 23);
 			this.btnClose.TabIndex = 19;
@@ -294,11 +295,22 @@ namespace ActiveRecordGenerator
 			this.label7.TabIndex = 23;
 			this.label7.Text = "Templates";
 			// 
+			// btnBrowse
+			// 
+			this.btnBrowse.Location = new System.Drawing.Point(385, 64);
+			this.btnBrowse.Name = "btnBrowse";
+			this.btnBrowse.Size = new System.Drawing.Size(75, 23);
+			this.btnBrowse.TabIndex = 24;
+			this.btnBrowse.Text = "Browse ...";
+			this.btnBrowse.UseVisualStyleBackColor = true;
+			this.btnBrowse.Click += new System.EventHandler(this.btnBrowse_Click);
+			// 
 			// GeneratorForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(735, 357);
+			this.ClientSize = new System.Drawing.Size(774, 367);
+			this.Controls.Add(this.btnBrowse);
 			this.Controls.Add(this.label7);
 			this.Controls.Add(this.btnTemplatesSelectNone);
 			this.Controls.Add(this.btnTemplatesSelectAll);
@@ -363,6 +375,7 @@ namespace ActiveRecordGenerator
 		private System.Windows.Forms.Button btnTemplatesSelectNone;
 		private System.Windows.Forms.Button btnTemplatesSelectAll;
 		private System.Windows.Forms.Label label7;
+		private System.Windows.Forms.Button btnBrowse;
 	}
 }
 

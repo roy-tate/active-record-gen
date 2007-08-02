@@ -11,7 +11,7 @@ namespace ActiveRecordGenerator.CodeGen
 		// string pairs of SINGULAR, PLURAL in Proper case (first letter capitalized)
 		// this list is based on a list that I found in Ruby On Rails.
 		//Note: First Match Wins!
-		private string[] _Singular2Plural = new string[]{
+		private static string[] _Singular2Plural = new string[]{
 			"Search", "Searches",
 			"Switch", "Switches",
 			"Fix", "Fixes",
@@ -381,8 +381,13 @@ namespace ActiveRecordGenerator.CodeGen
 		/// <returns>singular form of table name</returns>
 		public string GetClassName()
 		{
-			string rClass = _TableName;
-			int tableLen = _TableName.Length;
+			return GetSingularName(_TableName);
+		}
+	
+		public static string GetSingularName(string tableName)
+		{
+			string rClass = tableName;
+			int tableLen = tableName.Length;
 			bool bFound = false;
 			string singular, plural;
 
@@ -390,21 +395,21 @@ namespace ActiveRecordGenerator.CodeGen
 
 			for (int i = 0; i < _Singular2Plural.Length; i = i + 2)
 			{ 
-				if (_TableName.EndsWith(_Singular2Plural[i+1], StringComparison.CurrentCultureIgnoreCase))
+				if (tableName.EndsWith(_Singular2Plural[i+1], StringComparison.CurrentCultureIgnoreCase))
 				{
 					singular = _Singular2Plural[i];
 					plural = _Singular2Plural[i+1];
-					rClass = _TableName.Substring(0, tableLen - plural.Length) + singular;
+					rClass = tableName.Substring(0, tableLen - plural.Length) + singular;
 					bFound = true;
 				}
 			}
 
 			if (!bFound)
 			{
-				if (_TableName.EndsWith("sses")) { rClass = _TableName.Substring(0, tableLen - 2); }
-				else if (_TableName.EndsWith("ches")) { rClass = _TableName.Substring(0, tableLen - 2); }
-				else if (_TableName.EndsWith("us")) { /* do nothing */; }
-				else if (_TableName.EndsWith("s")) { rClass = _TableName.Substring(0, tableLen - 1); }
+				if (tableName.EndsWith("sses")) { rClass = tableName.Substring(0, tableLen - 2); }
+				else if (tableName.EndsWith("ches")) { rClass = tableName.Substring(0, tableLen - 2); }
+				else if (tableName.EndsWith("us")) { /* do nothing */; }
+				else if (tableName.EndsWith("s")) { rClass = tableName.Substring(0, tableLen - 1); }
 			}
 			return rClass;
 			// return _TableName.EndsWith("s") ? _TableName.Substring(0, _TableName.Length - 1) : _TableName;
