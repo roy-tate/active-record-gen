@@ -20,6 +20,9 @@ namespace ActiveRecordGenerator.CodeGen
 
 		private DbForeignKeyInfo _DbForeignKeyInfo;
 
+		// configurable option
+		private bool _EnableValidationAttributes;
+
 		#endregion
 
 		public DbFieldInfo(
@@ -89,6 +92,12 @@ namespace ActiveRecordGenerator.CodeGen
 		{
 			get { return _Is_Primary_Key; }
 			set { _Is_Primary_Key = value; }
+		}
+
+		public bool EnableValidationAttributes
+		{
+			get { return _EnableValidationAttributes; }
+			set { _EnableValidationAttributes = value; }
 		}
 
 		#endregion
@@ -267,7 +276,14 @@ namespace ActiveRecordGenerator.CodeGen
 				else if (GetNetType().Equals("string") && Character_Maximum_Length > 1)
 				{
 					prop += ", Length = " + Character_Maximum_Length.ToString() + ")";
-					prop += ", ValidateLength(1, " + Character_Maximum_Length.ToString() + ")]";
+					if (EnableValidationAttributes)
+					{
+						prop += ", ValidateLength(1, " + Character_Maximum_Length.ToString() + ")]";
+					}
+					else
+					{
+						prop += "]";
+					}
 				}
 				else
 				{
