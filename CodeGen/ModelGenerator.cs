@@ -18,18 +18,20 @@ namespace ActiveRecordGenerator.CodeGen
 		string _NameSpace;
 		bool _MakePartial;
 		bool _PropChange;
+		bool _EnableValidationAttributes;
 		private FileHandlingResult _fhResult;
 		private FileExists _FileExists;
 
 		VelocityEngine engine = null;
 
-		public ModelGenerator(FileExists p_FileExists, string p_NameSpace, 
-			bool p_MakePartial, bool p_PropChange)
+		public ModelGenerator(FileExists p_FileExists, string p_NameSpace,
+			bool p_MakePartial, bool p_PropChange, bool p_Validate)
 		{
 			_FileExists = p_FileExists;			
 			_NameSpace = p_NameSpace;
 			_MakePartial = p_MakePartial;
 			_PropChange = p_PropChange;
+			_EnableValidationAttributes = p_Validate;
 			_fhResult = FileHandlingResult.None;
 
 			// Initialize NVelocity
@@ -57,6 +59,12 @@ namespace ActiveRecordGenerator.CodeGen
 
 			string className = p_Table.GetClassName();
 			DbFieldInfo[] fieldList = p_Table.GetFields();
+			// replicate flag to children
+			//TODO: add to [new] code generation context
+			for (int i = 0; i < fieldList.Length; i++)
+			{
+				fieldList[i].EnableValidationAttributes = _EnableValidationAttributes;
+			}
 			Debug.WriteLine("Table: " + p_Table + " -> " + className);
 			string fileName;
 

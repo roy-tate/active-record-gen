@@ -48,6 +48,24 @@ namespace ActiveRecordGenerator
 			}
 		}
 
+		public bool Partial 
+		{
+			get { return chkPartial.Checked; }
+			set { chkPartial.Checked = value; }
+		}
+
+		public bool PropertyEvents
+		{
+			get { return chkPropChange.Checked; }
+			set { chkPropChange.Checked = value; }
+		}
+
+		public bool Validation
+		{
+			get { return chkValidation.Checked; }
+			set { chkValidation.Checked = value; }
+		}
+
 		public GeneratorForm()
 		{
 			InitializeComponent();
@@ -133,7 +151,7 @@ namespace ActiveRecordGenerator
 					fileExistsForm.Dispose();
 				};
 
-				ModelGenerator modelGen = new ModelGenerator(fileExists, NameSpace, chkPartial.Checked, chkPropChange.Checked);
+				ModelGenerator modelGen = new ModelGenerator(fileExists, NameSpace, chkPartial.Checked, chkPropChange.Checked, chkValidation.Checked);
 				DbTableInfo table;
 				string sTemplate;
 				tsStatus.Text = "Generating ... ";

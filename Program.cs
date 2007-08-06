@@ -39,6 +39,18 @@ namespace ActiveRecordGenerator
 			gf.OutputDir = settings["OutputDir"];
 			gf.NameSpace = settings["Namespace"];
 
+			// due to limitations on out parameters, we have to set a local bool, then assign to a property
+			bool b;
+
+			bool.TryParse(settings["Partial"], out b);
+			gf.Partial = b;
+
+			bool.TryParse(settings["PropertyEvents"], out b);
+			gf.PropertyEvents = b;
+
+			bool.TryParse(settings["Validation"], out b);
+			gf.Validation = b;
+
 			// allow command line arguments to over-ride app config
 			if (args.Length == 3)
 			{
