@@ -27,3 +27,11 @@
 SELECT 'CREATE TABLE #temp ([ID] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, $paramtypes) ;' AS Line
 UNION ALL
 SELECT 'INSERT INTO #temp ($nfields) VALUES(' + $params + ');' AS Line FROM $table ;
+
+/*
+-- replace TheTable with target table name and execute on target system
+INSERT INTO [TheTable] ($nfields) SELECT $nfields FROM #TEMP ;
+
+DROP TABLE #TEMP ;
+*/
+
