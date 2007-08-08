@@ -83,7 +83,7 @@ namespace $namespace
 					if (value == null)
 						${f.GetPrivateVariableName()} = null;
 					else
-						${f.GetPrivateVariableName()} = (value.ID > 0) ? value : null;
+						${f.GetPrivateVariableName()} = (value.${f.ForeignKeyInfo.PK_Column} > 0) ? value : null;
 #else
 					${f.GetPrivateVariableName()} = value;
 #end

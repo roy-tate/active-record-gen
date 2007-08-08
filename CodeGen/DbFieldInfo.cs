@@ -240,7 +240,7 @@ namespace ActiveRecordGenerator.CodeGen
 			if (IsForeignKey())
 			{
 				// test the IDs of the ActiveRecord objects
-				return "(" + GetPrivateVariableName() + " == null) || (value == null) || (value.ID != " + GetPrivateVariableName() + ".ID)";
+				return "(" + GetPrivateVariableName() + " == null) || (value == null) || (value." + _DbForeignKeyInfo.PK_Column + " != " + GetPrivateVariableName() + "." + _DbForeignKeyInfo.PK_Column + ")";
 			}
 			else if ((GetNetType().Equals("string")) || (GetNetType().Equals("datetime")))
 			{
