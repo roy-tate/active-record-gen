@@ -96,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Templates\NHibernate_XML_Mapping.vm" />
     <None Include="Templates\Poco.vm" />
     <None Include="Templates\SqlAuditTrigger.vm" />
     <None Include="Templates\SqlDataInsertBuilder.vm" />
