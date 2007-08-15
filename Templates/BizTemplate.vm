@@ -7,6 +7,9 @@
 ## with ToString() support, such that an array of model objects could
 ## be data bound to a combo box, etc.
 ##
+## Note: Two un-saved entities of same type will be considered equal, as they
+## will have the same Primary Key value - ZERO!
+##
 namespace $namespace
 {
 	// Business partial class ${table.GetClassName()} generated from ${table}
