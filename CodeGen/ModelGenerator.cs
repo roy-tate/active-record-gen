@@ -59,6 +59,7 @@ namespace ActiveRecordGenerator.CodeGen
 
 			string className = p_Table.GetClassName();
 			DbFieldInfo[] fieldList = p_Table.GetFields();
+			DbRelatedTableInfo[] related = p_Table.GetDbRelatedTableInfo();
 			// replicate flag to children
 			//TODO: add to [new] code generation context
 			for (int i = 0; i < fieldList.Length; i++)
@@ -76,6 +77,7 @@ namespace ActiveRecordGenerator.CodeGen
 			context.Put("PropChange", _PropChange);
 			context.Put("table", p_Table);
 			context.Put("fields", fieldList);
+			context.Put("related", related);
 			context.Put("date", DateTime.Now.ToString("yyyy-MM-dd"));
 
 			//get suggested class name

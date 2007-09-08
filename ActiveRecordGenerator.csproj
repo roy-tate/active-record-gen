@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="CodeGen\CodeGenFactory.cs" />
     <Compile Include="CodeGen\DbForeignKeyInfo.cs" />
+    <Compile Include="CodeGen\DbRelatedTableInfo.cs" />
     <Compile Include="FileExistsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -96,11 +97,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Templates\ModelTemplate_with_IList.vm" />
     <None Include="Templates\NHibernate_XML_Mapping.vm" />
     <None Include="Templates\Poco.vm" />
     <None Include="Templates\SqlAuditTrigger.vm" />
     <None Include="Templates\SqlDataInsertBuilder.vm" />
     <None Include="Templates\SqlDelete.vm" />
+    <None Include="Templates\WinGridSupport.vm" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
