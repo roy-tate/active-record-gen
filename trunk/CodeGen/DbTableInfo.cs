@@ -7,6 +7,9 @@ namespace ActiveRecordGenerator.CodeGen
 {
 	public class DbTableInfo
 	{
+
+		#region "Singular To Plural Mapping"
+
 		//TODO: Create a hashmap of plural words and their singular equivalent
 		// string pairs of SINGULAR, PLURAL in Proper case (first letter capitalized)
 		// this list is based on a list that I found in Ruby On Rails.
@@ -85,14 +88,6 @@ namespace ActiveRecordGenerator.CodeGen
 			"Edge", "Edges"
 		};
 
-		private string _TableName;
-		private DbFieldInfo[] _DbFieldInfo;
-
-		public DbTableInfo(string p_TableName)
-		{
-			_TableName = p_TableName;
-		}
-
 		// Find the LastWord in a mixed case string, based on upper case characters
 		// (Not used at the moment.)
 		public static string LastWord(string mixedCaseName)
@@ -112,9 +107,56 @@ namespace ActiveRecordGenerator.CodeGen
 			return lastWord;
 		}
 
+		public static string GetSingularName(string tableName)
+		{
+			string rClass = tableName;
+			int tableLen = tableName.Length;
+			bool bFound = false;
+			string singular, plural;
+
+			//TODO: Add another class to manague Plurality.  Read Singular,Plural name pairs from an optional text file.
+
+			for (int i = 0; i < _Singular2Plural.Length; i = i + 2)
+			{
+				if (tableName.EndsWith(_Singular2Plural[i + 1], StringComparison.CurrentCultureIgnoreCase))
+				{
+					singular = _Singular2Plural[i];
+					plural = _Singular2Plural[i + 1];
+					rClass = tableName.Substring(0, tableLen - plural.Length) + singular;
+					bFound = true;
+				}
+			}
+
+			if (!bFound)
+			{
+				if (tableName.EndsWith("sses")) { rClass = tableName.Substring(0, tableLen - 2); }
+				else if (tableName.EndsWith("ches")) { rClass = tableName.Substring(0, tableLen - 2); }
+				else if (tableName.EndsWith("us")) { /* do nothing */; }
+				else if (tableName.EndsWith("s")) { rClass = tableName.Substring(0, tableLen - 1); }
+			}
+			return rClass;
+			// return _TableName.EndsWith("s") ? _TableName.Substring(0, _TableName.Length - 1) : _TableName;
+		}
+
+		#endregion
+
+		private string _TableName;
+		private DbFieldInfo[] _DbFieldInfo;
+		private DbRelatedTableInfo[] _DbRelatedTableInfo;
+
+		public DbTableInfo(string p_TableName)
+		{
+			_TableName = p_TableName;
+		}
+
 		public DbFieldInfo[] GetFields()
 		{
 			return _DbFieldInfo;
+		}
+
+		public DbRelatedTableInfo[] GetDbRelatedTableInfo()
+		{
+			return _DbRelatedTableInfo;
 		}
 
 		/// <summary>
@@ -190,6 +232,8 @@ namespace ActiveRecordGenerator.CodeGen
 			CollectPrimaryKeys(p_Conn);
 			// load foreign keys and associate them to dbFieldInfo objects
 			CollectForeignKeys(p_Conn);
+			// load related tables that refer to this table via a foreign key
+			CollectDependentTables(p_Conn);
 		}
 
 		/// <summary>
@@ -207,7 +251,6 @@ namespace ActiveRecordGenerator.CodeGen
 		+ " WHERE tc.CONSTRAINT_TYPE = 'PRIMARY KEY'"
 		+ " AND tc.TABLE_NAME = @Table";
 
-			//TODO: Implement CollectPrimaryKeys()
 			int i;
 
 			// Connect to database, collect list of tables 
@@ -255,7 +298,7 @@ namespace ActiveRecordGenerator.CodeGen
 
 		private void CollectForeignKeys(IDbConnection p_Conn)
 		{
-			string sqlQuery = @"SELECT FK.TABLE_NAME AS K_Table,"
+			string sqlQuery = "SELECT FK.TABLE_NAME AS K_Table,"
 		+ " CU.COLUMN_NAME AS FK_Column,"
 		+ " PK.TABLE_NAME AS PK_Table,"
 		+ " PT.COLUMN_NAME AS PK_Column,"
@@ -374,6 +417,99 @@ namespace ActiveRecordGenerator.CodeGen
 		}
 
 		/// <summary>
+		/// CollectDependentTables - find tables that link to us as a foreign key
+		/// </summary>
+		/// SELECT k.table_name, k.column_name field_name, c.constraint_type,
+		///             CASE c.is_deferrable WHEN 'NO' THEN 0 ELSE 1 END 'is_deferrable',
+		///             CASE c.initially_deferred WHEN 'NO' THEN 0 ELSE 1 END 'is_deferred',
+		///             rc.match_option 'match_type', rc.update_rule 'on_update', rc.delete_rule 'on_delete',
+		///             ccu.table_name 'references_table', ccu.column_name 'references_field', k.ordinal_position 'field_position'
+		/// FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE k
+		/// LEFT JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS c
+		///             ON k.table_name = c.table_name AND k.table_schema = c.table_schema
+		///             AND k.table_catalog = c.table_catalog AND k.constraint_catalog = c.constraint_catalog
+		///             AND k.constraint_name = c.constraint_name
+		/// LEFT JOIN INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS rc
+		///             ON rc.constraint_schema = c.constraint_schema AND rc.constraint_catalog = c.constraint_catalog
+		///             AND rc.constraint_name = c.constraint_name
+		/// LEFT JOIN INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE ccu
+		///             ON rc.unique_constraint_schema = ccu.constraint_schema
+		///             AND rc.unique_constraint_catalog = ccu.constraint_catalog
+		///             AND rc.unique_constraint_name = ccu.constraint_name
+		/// WHERE k.constraint_catalog = DB_NAME()
+		/// AND c.constraint_type = 'FOREIGN KEY'
+		/// AND ccu.table_name = @Table
+		/// ORDER BY k.constraint_name, k.ordinal_position
+		/// 
+		/// Note: This will return one-to-many and many-to-many tables where this table is
+		/// listed as a foreign key reference.
+		/// <param name="p_Conn">an open database connection to the appropriate server and db</param>
+		private void CollectDependentTables(IDbConnection p_Conn)
+		{
+			string sqlQuery = @"
+SELECT k.table_name, k.column_name --, k.ordinal_position
+FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE k
+LEFT JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS c
+            ON k.table_name = c.table_name AND k.table_schema = c.table_schema
+            AND k.table_catalog = c.table_catalog AND k.constraint_catalog = c.constraint_catalog
+            AND k.constraint_name = c.constraint_name
+LEFT JOIN INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS rc
+            ON rc.constraint_schema = c.constraint_schema AND rc.constraint_catalog = c.constraint_catalog
+            AND rc.constraint_name = c.constraint_name
+LEFT JOIN INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE ccu
+            ON rc.unique_constraint_schema = ccu.constraint_schema
+            AND rc.unique_constraint_catalog = ccu.constraint_catalog
+            AND rc.unique_constraint_name = ccu.constraint_name
+WHERE k.constraint_catalog = DB_NAME()
+AND c.constraint_type = 'FOREIGN KEY'
+AND ccu.table_name = @Table
+ORDER BY k.constraint_name, k.ordinal_position";
+
+			List<DbRelatedTableInfo> list = new List<DbRelatedTableInfo>();
+			DbRelatedTableInfo field;
+			int i;
+
+			// Connect to database, collect list of tables 
+			IDbCommand cmd = null;
+			IDataReader reader = null;
+
+			string Rel_Table;
+			string Rel_Column;
+			//int Ordinal_Position;
+
+			try
+			{
+				cmd = p_Conn.CreateCommand();
+				cmd.CommandType = CommandType.Text;
+				cmd.CommandText = sqlQuery;
+				IDbDataParameter p = cmd.CreateParameter();
+				p.ParameterName = "Table";
+				p.Value = _TableName;
+				cmd.Parameters.Add(p);
+				reader = cmd.ExecuteReader();
+				while (reader.Read())
+				{
+					i = 0;
+					Rel_Table = reader.IsDBNull(i) ? "" : reader.GetString(i); i++;
+					Rel_Column = reader.IsDBNull(i) ? "" : reader.GetString(i); i++;
+					//Ordinal_Position = reader.IsDBNull(i) ? "" : reader.GetInt32(i); i++;
+
+					// store referred tables
+					field = new DbRelatedTableInfo(Rel_Table, Rel_Column);
+					list.Add(field);
+				}
+				_DbRelatedTableInfo = list.ToArray();
+			}
+			finally
+			{
+				if (reader != null) reader.Close();
+				if (cmd != null) cmd.Dispose();
+				reader = null;
+				cmd = null;
+			}
+		}
+
+		/// <summary>
 		/// Get Class Name from Table Name
 		/// </summary>
 		/// Find the singular form of a name, given a multi-word name ending in its plural form
@@ -383,38 +519,23 @@ namespace ActiveRecordGenerator.CodeGen
 		{
 			return GetSingularName(_TableName);
 		}
-	
-		public static string GetSingularName(string tableName)
+
+		public DbFieldInfo GetPkField()
 		{
-			string rClass = tableName;
-			int tableLen = tableName.Length;
-			bool bFound = false;
-			string singular, plural;
+			DbFieldInfo field = null;
 
-			//TODO: Add another class to manague Plurality.  Read Singular,Plural name pairs from an optional text file.
-
-			for (int i = 0; i < _Singular2Plural.Length; i = i + 2)
-			{ 
-				if (tableName.EndsWith(_Singular2Plural[i+1], StringComparison.CurrentCultureIgnoreCase))
+			foreach (DbFieldInfo f in _DbFieldInfo)
+			{
+				if (f.Is_Primary_Key)
 				{
-					singular = _Singular2Plural[i];
-					plural = _Singular2Plural[i+1];
-					rClass = tableName.Substring(0, tableLen - plural.Length) + singular;
-					bFound = true;
+					field = f;
+					break;
 				}
 			}
 
-			if (!bFound)
-			{
-				if (tableName.EndsWith("sses")) { rClass = tableName.Substring(0, tableLen - 2); }
-				else if (tableName.EndsWith("ches")) { rClass = tableName.Substring(0, tableLen - 2); }
-				else if (tableName.EndsWith("us")) { /* do nothing */; }
-				else if (tableName.EndsWith("s")) { rClass = tableName.Substring(0, tableLen - 1); }
-			}
-			return rClass;
-			// return _TableName.EndsWith("s") ? _TableName.Substring(0, _TableName.Length - 1) : _TableName;
+			return field;
 		}
-
+	
 		public override string ToString()
 		{
 			return _TableName;

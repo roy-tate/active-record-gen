@@ -16,11 +16,26 @@ namespace $namespace
 	// $developer [$date] Created
 
 	using System;
+	using NHibernate.Expression;
 
 	public $Partial class ${table.GetClassName()}
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(${table.GetClassName()}));
 
+		#region Finder_Methods
+
+		/*
+#foreach($r in $related)
+		public ${r.GetClassName()}[] find${r.Table_Name} ()
+		{
+			return ${r.GetClassName()}.FindAll(Expression.Eq(${r.GetClassName()}.Prop_${r.Column_Name}, _${table.GetPKField().Column_Name}));
+		}
+		*/
+		
+#end			
+		
+		#endregion
+		
 		#region Business_Methods
 
 		public override int GetHashCode()

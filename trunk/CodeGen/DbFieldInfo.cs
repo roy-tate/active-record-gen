@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+//using System.Diagnostics;
 using System.Text;
 
 namespace ActiveRecordGenerator.CodeGen
@@ -146,12 +146,12 @@ namespace ActiveRecordGenerator.CodeGen
 				if (privateVariableName.EndsWith("_ID"))
 				{
 					privateVariableName = privateVariableName.Substring(0, privateVariableName.Length - 3);
-					Debug.WriteLine("Column: "+ _Column_Name +" maps to"+ privateVariableName);
+					//Debug.WriteLine("Column: "+ _Column_Name +" maps to "+ privateVariableName);
 				}
 				else if (privateVariableName.EndsWith("ID"))
 				{
 					privateVariableName = privateVariableName.Substring(0, privateVariableName.Length - 2);
-					Debug.WriteLine("Column: " + _Column_Name + " maps to" + privateVariableName);
+					//Debug.WriteLine("Column: " + _Column_Name + " maps to " + privateVariableName);
 				}
 			}
 			else
