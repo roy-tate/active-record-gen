@@ -97,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Templates\ASP_WebForm.vm" />
     <None Include="Templates\ModelTemplate_with_IList.vm" />
     <None Include="Templates\NHibernate_XML_Mapping.vm" />
     <None Include="Templates\Poco.vm" />
