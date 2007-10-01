@@ -520,6 +520,12 @@ ORDER BY k.constraint_name, k.ordinal_position";
 			return GetSingularName(_TableName);
 		}
 
+		public string GetLabel()
+		{
+			//TODO: Test This!
+			return DbFieldInfo.MakeLabel(_TableName);
+		}
+
 		public DbFieldInfo GetPkField()
 		{
 			DbFieldInfo field = null;

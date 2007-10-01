@@ -293,6 +293,68 @@ namespace ActiveRecordGenerator.CodeGen
 			}
 		}
 
+
+		/// <summary>
+		/// Makelabel - given a string, insert spaces on transition from lower case to upper case characters and replace punctuation with space
+		/// </summary>
+		/// <param name="pPropName">Property to be converted</param>
+		/// <returns></returns>
+		///TODO: make this method part of a string utility class
+		internal static string MakeLabel(string pPropName)
+		{
+			List<char> header = new List<char>();
+			header.AddRange(pPropName.ToCharArray());
+			bool lastWasLower = false;
+			for (int i = 0; i < header.Count; i++)
+			{
+				if (Char.IsPunctuation(header[i]))
+				{
+					//replace punctuation with space
+					header[i] = ' ';
+					lastWasLower = false;
+				}
+				else if (Char.IsLower(header[i]))
+				{
+					lastWasLower = true;
+				}
+				else if (lastWasLower && Char.IsUpper(header[i]))
+				{
+					// insert spaces between lower and upper characters
+					header.Insert(i, ' ');
+					lastWasLower = false;
+				}
+			}
+			// replace multiple spaces with one space
+			bool lastWasSpace = true;
+			for (int i = header.Count - 1; i >= 0; i--)
+			{
+				if (Char.IsWhiteSpace(header[i]))
+				{
+					if (lastWasSpace)
+					{
+						header.RemoveAt(i);
+					}
+					lastWasSpace = true;
+				}
+				else
+				{
+					lastWasSpace = false;
+				}
+			}
+			return new String(header.ToArray());
+		}
+
+
+		/// <summary>
+		/// Gets the label.
+		/// </summary>
+		/// <returns>space delimited version of field containing camel-case or underscore delimited words</returns>
+		public string GetLabel()
+		{	
+			// create a label for field
+			return MakeLabel(_Column_Name);
+		}
+
 		public override string ToString()
 		{
 			return _Column_Name +" - "+ _Data_Type;
