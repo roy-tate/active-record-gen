@@ -22,6 +22,30 @@ namespace ActiveRecordGenerator
 			set { if (value != null) txtDatabase.Text = value; }
 		}
 
+		//TODO: add configuration and setter
+		public string UserName 
+		{
+			get { return txtUserName.Text; }
+		}
+
+		//TODO: add configuration and setter
+		public string Password
+		{
+			get { return txtPassword.Text; }
+		}
+
+		//TODO: add configuration and setter
+		public bool IncludeFilter 
+		{
+			get { return chkIncludeFilter.Checked; }
+		}
+
+		//TODO: add configuration and setter
+		public string FilterPrefix 
+		{
+			get { return txtFilterPrefix.Text; }
+		}
+
 		public string OutputDir
 		{
 			get 
@@ -89,7 +113,8 @@ namespace ActiveRecordGenerator
 			{
 				this.Cursor = Cursors.WaitCursor;
 				//TODO: Integrate a BackgroundWorker
-				DbTableInfo[] dbTables = CodeGenFactory.GetTables(null, Server, Database);
+				DbTableInfo[] dbTables = CodeGenFactory.GetTables(null, 
+					Server, Database, UserName, Password, IncludeFilter, FilterPrefix);
 				chkLbTables.Items.Clear();
 				chkLbTables.Items.AddRange(dbTables);
 				this.Cursor = Cursors.Default ;
