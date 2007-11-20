@@ -30,9 +30,9 @@ namespace $namespace
 		{
 			return ${r.GetClassName()}.FindAll(Expression.Eq(${r.GetClassName()}.Prop_${r.Column_Name}, _${table.GetPKField().Column_Name}));
 		}
-		*/
 		
 #end			
+		*/
 		
 		#endregion
 		
